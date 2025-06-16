@@ -27,7 +27,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 # st.set_page_config(layout='wide')
-st.title("🎮 Steam Game Positive Rating Prediction")
+st.title("🎮 Steam Games Positive Rating Prediction")
 
 @st.cache_data
 def load_data():
@@ -263,7 +263,15 @@ elif menu=="EDA":
 
 elif menu == "Model & Predict":
     st.header("Model Training & Prediction")
+    st.markdown("""
+    In this section, we use a **Random Forest Regressor** — a powerful ensemble model that builds multiple decision trees and averages their outputs to produce reliable predictions.
+    It’s well-suited for this regression task because:
+    - It handles non-linear relationships well
+    - It’s robust to outliers
+    - It requires little preprocessing
 
+    We use it to predict the number of **positive user ratings** based on selected game features.
+    """)
     model_path = "rf_model.pkl"
     model_trained_now = False
     model_loaded = False
