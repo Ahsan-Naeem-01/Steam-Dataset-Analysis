@@ -9,7 +9,8 @@ from collections import Counter
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score, accuracy_score, mean_absolute_error, confusion_matrix
+from sklearn.metrics import r2_score, accuracy_score, mean_absolute_error, confusion_matrix, classification_report
+
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 import joblib
@@ -135,7 +136,6 @@ elif menu=="EDA":
             )    
             st.pyplot(fig)
 
-    # Inside your Streamlit app, under EDA section
 
     with tab2:
         st.title("🎮 Steam Game Insights & Trends")
@@ -307,7 +307,7 @@ elif menu == "Model & Predict":
 
         mae_rf = mean_absolute_error(y_test, y_pred_rf)
         r2_rf = r2_score(y_test, y_pred_rf)
-        threshold = 100
+        threshold = df['positive_ratings'].median() 
         y_pred_class_rf = (y_pred_rf > threshold).astype(int)
         y_test_class_rf = (y_test > threshold).astype(int)
         ac_rf = accuracy_score(y_test_class_rf, y_pred_class_rf)
@@ -316,7 +316,7 @@ elif menu == "Model & Predict":
         st.subheader("📊 Model Performance Metrics")
         st.metric("Mean Absolute Error (MAE)", f"{mae_rf:.2f}")
         st.metric("R² Score", f"{r2_rf:.2f}")
-        st.metric("Accuracy (Threshold > 100)", f"{ac_rf:.2f}")
+        st.metric(f"Accuracy (Threshold > {df['positive_ratings'].median() })", f"{ac_rf:.2f}")
 
         st.subheader("📉 Confusion Matrix")
         fig_cm, ax_cm = plt.subplots()
@@ -324,6 +324,12 @@ elif menu == "Model & Predict":
         ax_cm.set_xlabel('Predicted')
         ax_cm.set_ylabel('Actual')
         st.pyplot(fig_cm)
+
+        st.subheader("Classification Report")
+        report = classification_report(y_test_class_rf, y_pred_class_rf, target_names=['Not Popular', 'Popular'], output_dict= True)
+        report_df = pd.DataFrame(report).transpose()
+
+        st.dataframe(report_df.style.format("{:.2f}"))
 
         st.subheader("📈 Actual vs Predicted Positive Ratings")
         fig_scatter, ax_scatter = plt.subplots(figsize=(10, 6))
@@ -395,9 +401,9 @@ elif menu == "Conclusion":
     - We sampled 5,000 records from the dataset for faster model training and encoded categorical variables using **OneHotEncoder**.
     - Features were standardized using `StandardScaler` in a pipeline.
     - The model was evaluated on a test set (20% split) and achieved the following performance:
-        - 📈 **Mean Absolute Error (MAE):** 147.01
-        - 📊 **R² Score:** 0.93
-        - ✅ **Accuracy** (based on predicting games with >100 positive ratings): 0.98
+        - 📈 **Mean Absolute Error (MAE):** 168.24
+        - 📊 **R² Score:** 0.95
+        - ✅ **Accuracy** (based on predicting games with >24.0 positive ratings): 0.95
     - A confusion matrix and a scatterplot of actual vs. predicted ratings were provided for evaluation.
 
     🧠 **Interactive Prediction**
